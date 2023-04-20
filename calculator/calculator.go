@@ -19,7 +19,7 @@ func calcExpression(exp string) (float64, error) {
 	}
 
 	for !numberOnly(exp) {
-		res, err := CalcUnit(exp, &index)
+		res, err := calcUnit(exp, &index)
 		if err != nil {
 			return 0, err
 		}
@@ -80,7 +80,7 @@ func calc(n1 float64, n2 float64, sign string) (float64, error) {
 }
 
 // Finds the position of unit in whole expression
-func FindIndex(content string, piece string) []int {
+func findIndex(content string, piece string) []int {
 	re := regexp.MustCompile(editor.MakeRegExp(piece))
 	loc := re.FindStringIndex(content)
 	return loc
@@ -106,11 +106,11 @@ func findNumbers(strNumbers []string, fNeg bool, sNeg bool) (float64, float64, e
 }
 
 // Calculates one operation
-func CalcUnit(exp string, pieceIndex *[]int) (float64, error) {
+func calcUnit(exp string, pieceIndex *[]int) (float64, error) {
 	var firstNeg, secondNeg bool
 
 	unit, sign, err := parseUnit(exp)
-	*pieceIndex = FindIndex(exp, unit)
+	*pieceIndex = findIndex(exp, unit)
 
 	if IsNegative(unit) {
 		firstNeg = true
@@ -136,7 +136,7 @@ func CalcUnit(exp string, pieceIndex *[]int) (float64, error) {
 }
 
 // Returnes the string between brackets
-func ParseBrackets(exp string) (string, error) {
+func parseBrackets(exp string) (string, error) {
 	var found bool
 
 	ind1, ind2 := -1, -1
@@ -161,11 +161,11 @@ func ParseBrackets(exp string) (string, error) {
 // The main func that returns actual result
 func GetResult(exp string) (float64, error) {
 	for bracketsIn(exp) {
-		innerExp, err := ParseBrackets(exp)
+		innerExp, err := parseBrackets(exp)
 		if err != nil {
 			return 0, err
 		}
-		index := FindIndex(exp, "("+innerExp+")")
+		index := findIndex(exp, "("+innerExp+")")
 		tempResult, err := calcExpression(innerExp)
 		if err != nil {
 			return 0, err
